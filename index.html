@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es" class="dark:bg-gray-900 bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Premium Template</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEO9tZ1Zb7JQv4NxjwImU8bHHOcqFAIIg6GCTqEEk+cAm8D" crossorigin="anonymous">
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        /* Custom styles for sidebar */
+        #sidebar {
+            width: 250px;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                left: -250px;
+            }
+            #sidebar.show {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="dark:text-gray-100 text-gray-900">
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-light dark:bg-gray-800 border-end position-fixed top-0 start-0 h-100 p-3 d-flex flex-column transition-all">
+        <h3 class="mb-4">Mi Dashboard</h3>
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-2"><a href="#" class="nav-link active"><i class='bx bx-home'></i> Inicio</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-store'></i> Ventas</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-user'></i> Usuarios</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-food-menu'></i> Menús</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-package'></i> Inventario</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-plane'></i> Reservas</a></li>
+        </ul>
+    </div>
+    <!-- Page Content Wrapper -->
+    <div class="d-flex flex-column min-vh-100" style="margin-left:250px;" id="content-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white dark:bg-gray-800 border-bottom sticky-top">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary me-2" id="sidebarToggle"><i class='bx bx-menu'></i></button>
+                <form class="d-flex me-auto">
+                    <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar">
+                </form>
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item me-3"><a class="nav-link position-relative" href="#"><i class='bx bx-bell text-xl'></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span></a></li>
+                    <li class="nav-item me-3">
+                        <button id="themeToggle" class="btn btn-outline-secondary"><i class='bx bx-moon'></i></button>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#"><img src="https://i.pravatar.cc/40" class="rounded-circle" alt="avatar"></a></li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <main class="flex-grow-1 p-4">
+            <!-- Metric Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Ventas</h5>
+                            <p class="card-text fs-4">$12,345</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Usuarios</h5>
+                            <p class="card-text fs-4">1,234</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Pedidos</h5>
+                            <p class="card-text fs-4">567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Clientes</h5>
+                            <p class="card-text fs-4">321</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Charts -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Ventas Mensuales</h5>
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Pedidos por Categoría</h5>
+                            <div id="barChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Distribución de Usuarios</h5>
+                            <canvas id="doughnutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Data Table -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos Recientes</h5>
+                    <div class="table-responsive">
+                        <table id="ordersTable" class="display" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td><td>Juan Pérez</td><td>Completado</td><td>2024-01-15</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td><td>Ana Gómez</td><td>Pendiente</td><td>2024-01-16</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td><td>María Díaz</td><td>Enviado</td><td>2024-01-17</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td><td>Carlos Ruiz</td><td>Cancelado</td><td>2024-01-18</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="bg-white dark:bg-gray-800 text-center py-4 mt-auto">
+            <p class="mb-0">&copy; 2024 Dashboard Premium Template</p>
+        </footer>
+    </div>
+
+    <!-- Scripts: jQuery, Bootstrap, DataTables, Chart.js, ApexCharts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp7pF8fqt2Kx6pGzG1z8YQgwH6w0FB6C2pP6JCE=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeo3lK2nU5rQ6d0Wd4nUjC2iqIvoEH3Sl0sibVcOQVnN4G2e" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+            const wrapper = document.getElementById('content-wrapper');
+            wrapper.style.marginLeft = sidebar.classList.contains('show') ? '250px' : '0';
+        });
+
+        // Dark mode toggle
+        const htmlEl = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        if(localStorage.getItem('theme') === 'dark') {
+            htmlEl.classList.add('dark');
+        }
+        themeToggle.addEventListener('click', () => {
+            htmlEl.classList.toggle('dark');
+            localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // DataTables initialization
+        $(document).ready(function() {
+            $('#ordersTable').DataTable();
+        });
+
+        // Chart.js Line chart
+        const ctxLine = document.getElementById('lineChart');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Ventas',
+                    data: [150, 200, 180, 220, 300, 250],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13,110,253,0.1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // ApexCharts Bar chart
+        const barOptions = {
+            chart: { type: 'bar', height: 300 },
+            series: [{ name: 'Pedidos', data: [30, 40, 45, 50, 49, 60, 70] }],
+            xaxis: { categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] }
+        };
+        const barChart = new ApexCharts(document.querySelector('#barChart'), barOptions);
+        barChart.render();
+
+        // Chart.js Doughnut chart
+        const ctxDoughnut = document.getElementById('doughnutChart');
+        new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Activos', 'Inactivos', 'Nuevos'],
+                datasets: [{
+                    data: [60, 25, 15],
+                    backgroundColor: ['#0d6efd', '#6c757d', '#198754']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+</body>
+</html>

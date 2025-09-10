@@ -4,6 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard Premium – Template</title>
+  <script>
+    (function() {
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
   <!-- ==========================
        CSS: Frameworks & Libs (CDN oficiales)
        ========================== -->
@@ -34,6 +43,7 @@
 
     /* Tema claro (por defecto) */
     html[data-theme="light"] {
+      color-scheme: light;
       --bs-body-bg: #f8fafc; /* slate-50 */
       --bs-body-color: #0f172a; /* slate-900 */
       --card-bg: #ffffff;
@@ -48,6 +58,7 @@
 
     /* Tema oscuro */
     html[data-theme="dark"] {
+      color-scheme: dark;
       --bs-body-bg: #0b1220; /* fondo general */
       --bs-body-color: #e2e8f0; /* texto */
       --card-bg: #0f172a; /* slate-900 */
@@ -60,10 +71,10 @@
       --sidebar-hover: rgba(255,255,255,0.06);
     }
 
-    body { background-color: var(--bs-body-bg); color: var(--bs-body-color); }
+    body { background-color: var(--bs-body-bg); color: var(--bs-body-color); transition: background-color .3s, color .3s; }
 
     /* Navbar */
-    .app-navbar { background-color: var(--navbar-bg); border-bottom: 1px solid var(--navbar-border); }
+    .app-navbar { background-color: var(--navbar-bg); border-bottom: 1px solid var(--navbar-border); transition: background-color .3s, border-color .3s; }
 
     /* Sidebar */
     .app-sidebar {
@@ -71,7 +82,7 @@
       width: var(--sidebar-width); background: var(--sidebar-bg); color: var(--sidebar-color);
       padding-top: 64px; /* altura aproximada navbar */
       overflow-y: auto;
-      transition: width .2s ease-in-out;
+      transition: width .2s ease-in-out, background-color .3s, color .3s;
     }
     .app-sidebar .brand { position: fixed; top: 0; left: 0; right: 0; height: 64px; display:flex; align-items:center; padding: 0 1rem; background: var(--sidebar-bg); border-right: 1px solid var(--navbar-border); }
     .app-sidebar .brand .logo { width: 36px; height:36px; border-radius: .75rem; background: var(--brand-bg); display:grid; place-items:center; color:#fff; font-weight:700; }
@@ -93,9 +104,18 @@
     body.sidebar-collapsed .app-wrapper { padding-left: var(--sidebar-collapsed-width); }
 
     /* Tarjetas */
-    .card { background-color: var(--card-bg); border-color: var(--card-border); }
+    .card { background-color: var(--card-bg); border-color: var(--card-border); transition: background-color .3s, border-color .3s, color .3s; }
     .metric { display:flex; align-items: center; gap: 1rem; }
     .metric .icon { width:42px; height:42px; border-radius: .75rem; display:grid; place-items:center; }
+
+    /* DataTables dark mode */
+    html[data-theme="dark"] .dataTable { color: var(--bs-body-color); background-color: var(--card-bg); }
+    html[data-theme="dark"] .dataTable thead th,
+    html[data-theme="dark"] .dataTable tbody td { border-color: var(--card-border); }
+    html[data-theme="dark"] .dataTables_wrapper .dataTables_filter input,
+    html[data-theme="dark"] .dataTables_wrapper .dataTables_length select { background-color: var(--card-bg); color: var(--bs-body-color); border-color: var(--card-border); }
+    html[data-theme="dark"] .dataTables_wrapper .dataTables_info,
+    html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate a { color: var(--bs-body-color); }
 
     /* Footer */
     .app-footer { border-top: 1px solid var(--navbar-border); color: #94a3b8; }
@@ -409,31 +429,27 @@
     // Utilidades: año en footer
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Aplicar tema guardado
-    (function initTheme() {
-      const stored = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = stored || (prefersDark ? 'dark' : 'light');
-      setTheme(theme);
-    })();
+      // Gestor de tema
+      const themeBtn = document.getElementById('themeToggle');
 
-    function setTheme(theme) {
-      const html = document.documentElement;
-      html.setAttribute('data-theme', theme);
-      // Tailwind dark class
-      if (theme === 'dark') html.classList.add('dark'); else html.classList.remove('dark');
-      localStorage.setItem('theme', theme);
-    }
+      function setTheme(theme) {
+        const html = document.documentElement;
+        html.setAttribute('data-theme', theme);
+        if (theme === 'dark') html.classList.add('dark'); else html.classList.remove('dark');
+        localStorage.setItem('theme', theme);
+        themeBtn.innerHTML = theme === 'dark' ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+        const table = document.getElementById('ordersTable');
+        if (table) table.classList.toggle('table-dark', theme === 'dark');
+      }
 
-    // Toggle de tema (icono cambia dinámicamente)
-    const themeBtn = document.getElementById('themeToggle');
-    themeBtn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || 'light';
-      setTheme(current === 'light' ? 'dark' : 'light');
-      themeBtn.innerHTML = (document.documentElement.getAttribute('data-theme') === 'dark') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
-    });
-    // set icon on load
-    themeBtn.innerHTML = (document.documentElement.getAttribute('data-theme') === 'dark') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+      // aplicar tema actual al cargar
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+      // Toggle de tema
+      themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        setTheme(current === 'light' ? 'dark' : 'light');
+      });
 
     // Sidebar: colapsar (desktop) & abrir/cerrar (mobile)
     const body = document.body;

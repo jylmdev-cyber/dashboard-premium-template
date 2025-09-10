@@ -1,243 +1,543 @@
 <!DOCTYPE html>
-<html lang="es" class="dark:bg-gray-900 bg-gray-100">
+<html lang="es" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Premium Template</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEO9tZ1Zb7JQv4NxjwImU8bHHOcqFAIIg6GCTqEEk+cAm8D" crossorigin="anonymous">
-    <!-- TailwindCSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Boxicons -->
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <style>
-        /* Custom styles for sidebar */
-        #sidebar {
-            width: 250px;
-        }
-        @media (max-width: 768px) {
-            #sidebar {
-                left: -250px;
-            }
-            #sidebar.show {
-                left: 0;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Premium – Template</title>
+  <!-- ==========================
+       CSS: Frameworks & Libs (CDN oficiales)
+       ========================== -->
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Boxicons (Íconos) -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- DataTables (Bootstrap 5 skin) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-2.0.7/datatables.min.css" />
+
+  <!-- TailwindCSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind config: habilitar dark mode por clase
+    tailwind.config = { darkMode: 'class' };
+  </script>
+
+  <style>
+    /* ==========================
+       Estilos base + Dark Mode
+       - Usamos CSS variables para alinear Bootstrap con el tema
+       ========================== */
+    :root {
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 82px;
+      --brand-bg: #0ea5e9; /* cyan-500 */
+    }
+
+    /* Tema claro (por defecto) */
+    html[data-theme="light"] {
+      --bs-body-bg: #f8fafc; /* slate-50 */
+      --bs-body-color: #0f172a; /* slate-900 */
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0; /* slate-200 */
+      --navbar-bg: #ffffff;
+      --navbar-border: #e2e8f0;
+      --sidebar-bg: #0b1220; /* azulado oscuro elegante */
+      --sidebar-color: #cbd5e1; /* slate-300 */
+      --sidebar-active: #ffffff;
+      --sidebar-hover: rgba(255,255,255,0.08);
+    }
+
+    /* Tema oscuro */
+    html[data-theme="dark"] {
+      --bs-body-bg: #0b1220; /* fondo general */
+      --bs-body-color: #e2e8f0; /* texto */
+      --card-bg: #0f172a; /* slate-900 */
+      --card-border: #1e293b; /* slate-800 */
+      --navbar-bg: #0f172a;
+      --navbar-border: #1e293b;
+      --sidebar-bg: #0b1220;
+      --sidebar-color: #94a3b8;
+      --sidebar-active: #ffffff;
+      --sidebar-hover: rgba(255,255,255,0.06);
+    }
+
+    body { background-color: var(--bs-body-bg); color: var(--bs-body-color); }
+
+    /* Navbar */
+    .app-navbar { background-color: var(--navbar-bg); border-bottom: 1px solid var(--navbar-border); }
+
+    /* Sidebar */
+    .app-sidebar {
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 1030;
+      width: var(--sidebar-width); background: var(--sidebar-bg); color: var(--sidebar-color);
+      padding-top: 64px; /* altura aproximada navbar */
+      overflow-y: auto;
+      transition: width .2s ease-in-out;
+    }
+    .app-sidebar .brand { position: fixed; top: 0; left: 0; right: 0; height: 64px; display:flex; align-items:center; padding: 0 1rem; background: var(--sidebar-bg); border-right: 1px solid var(--navbar-border); }
+    .app-sidebar .brand .logo { width: 36px; height:36px; border-radius: .75rem; background: var(--brand-bg); display:grid; place-items:center; color:#fff; font-weight:700; }
+    .app-sidebar .brand .title { color:#fff; font-weight: 700; margin-left: .75rem; }
+
+    .app-sidebar .menu { list-style: none; margin: 0; padding: 1rem .5rem 2rem; }
+    .app-sidebar .menu .section-title { font-size: .75rem; text-transform: uppercase; letter-spacing:.08em; padding: .5rem 1rem; color: #94a3b8; }
+    .app-sidebar .menu a { display:flex; align-items:center; gap:.75rem; padding: .625rem .875rem; border-radius: .5rem; color: var(--sidebar-color); text-decoration: none; }
+    .app-sidebar .menu a:hover { background: var(--sidebar-hover); color: var(--sidebar-active); }
+    .app-sidebar .menu a.active { background: rgba(14,165,233,.18); color: var(--sidebar-active); }
+    .app-sidebar .menu i { font-size: 1.25rem; min-width: 24px; text-align:center; }
+
+    /* Layout */
+    .app-wrapper { padding-top: 64px; padding-left: var(--sidebar-width); transition: padding-left .2s ease-in-out; }
+
+    /* Sidebar colapsado (modo mini) */
+    body.sidebar-collapsed .app-sidebar { width: var(--sidebar-collapsed-width); }
+    body.sidebar-collapsed .app-sidebar .title, body.sidebar-collapsed .app-sidebar .section-title, body.sidebar-collapsed .app-sidebar .menu a span { display: none; }
+    body.sidebar-collapsed .app-wrapper { padding-left: var(--sidebar-collapsed-width); }
+
+    /* Tarjetas */
+    .card { background-color: var(--card-bg); border-color: var(--card-border); }
+    .metric { display:flex; align-items: center; gap: 1rem; }
+    .metric .icon { width:42px; height:42px; border-radius: .75rem; display:grid; place-items:center; }
+
+    /* Footer */
+    .app-footer { border-top: 1px solid var(--navbar-border); color: #94a3b8; }
+
+    /* Offcanvas override for sidebar on < lg */
+    @media (max-width: 991.98px) {
+      .app-sidebar { position: fixed; transform: translateX(-100%); }
+      .app-sidebar.open { transform: translateX(0); }
+      .app-wrapper { padding-left: 0; }
+    }
+  </style>
 </head>
-<body class="dark:text-gray-100 text-gray-900">
-    <!-- Sidebar -->
-    <div id="sidebar" class="bg-light dark:bg-gray-800 border-end position-fixed top-0 start-0 h-100 p-3 d-flex flex-column transition-all">
-        <h3 class="mb-4">Mi Dashboard</h3>
-        <ul class="nav nav-pills flex-column">
-            <li class="nav-item mb-2"><a href="#" class="nav-link active"><i class='bx bx-home'></i> Inicio</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-store'></i> Ventas</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-user'></i> Usuarios</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-food-menu'></i> Menús</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-package'></i> Inventario</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link text-dark dark:text-gray-300"><i class='bx bx-plane'></i> Reservas</a></li>
-        </ul>
-    </div>
-    <!-- Page Content Wrapper -->
-    <div class="d-flex flex-column min-vh-100" style="margin-left:250px;" id="content-wrapper">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white dark:bg-gray-800 border-bottom sticky-top">
-            <div class="container-fluid">
-                <button class="btn btn-outline-secondary me-2" id="sidebarToggle"><i class='bx bx-menu'></i></button>
-                <form class="d-flex me-auto">
-                    <input class="form-control" type="search" placeholder="Buscar" aria-label="Buscar">
-                </form>
-                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                    <li class="nav-item me-3"><a class="nav-link position-relative" href="#"><i class='bx bx-bell text-xl'></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span></a></li>
-                    <li class="nav-item me-3">
-                        <button id="themeToggle" class="btn btn-outline-secondary"><i class='bx bx-moon'></i></button>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#"><img src="https://i.pravatar.cc/40" class="rounded-circle" alt="avatar"></a></li>
-                </ul>
-            </div>
-        </nav>
-        <!-- Main Content -->
-        <main class="flex-grow-1 p-4">
-            <!-- Metric Cards -->
-            <div class="row g-4 mb-4">
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Ventas</h5>
-                            <p class="card-text fs-4">$12,345</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Usuarios</h5>
-                            <p class="card-text fs-4">1,234</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Pedidos</h5>
-                            <p class="card-text fs-4">567</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Clientes</h5>
-                            <p class="card-text fs-4">321</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Charts -->
-            <div class="row g-4 mb-4">
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Ventas Mensuales</h5>
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Pedidos por Categoría</h5>
-                            <div id="barChart"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-4 mb-4">
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Distribución de Usuarios</h5>
-                            <canvas id="doughnutChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Data Table -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Pedidos Recientes</h5>
-                    <div class="table-responsive">
-                        <table id="ordersTable" class="display" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Cliente</th>
-                                    <th>Estado</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td><td>Juan Pérez</td><td>Completado</td><td>2024-01-15</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td><td>Ana Gómez</td><td>Pendiente</td><td>2024-01-16</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td><td>María Díaz</td><td>Enviado</td><td>2024-01-17</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td><td>Carlos Ruiz</td><td>Cancelado</td><td>2024-01-18</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <!-- Footer -->
-        <footer class="bg-white dark:bg-gray-800 text-center py-4 mt-auto">
-            <p class="mb-0">&copy; 2024 Dashboard Premium Template</p>
-        </footer>
+<body class="antialiased">
+  <!-- ==========================
+       SIDEBAR
+       ========================== -->
+  <aside id="sidebar" class="app-sidebar">
+    <div class="brand">
+      <div class="logo">DP</div>
+      <div class="title">Dashboard Premium</div>
     </div>
 
-    <!-- Scripts: jQuery, Bootstrap, DataTables, Chart.js, ApexCharts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp7pF8fqt2Kx6pGzG1z8YQgwH6w0FB6C2pP6JCE=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeo3lK2nU5rQ6d0Wd4nUjC2iqIvoEH3Sl0sibVcOQVnN4G2e" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        // Sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('show');
-            const wrapper = document.getElementById('content-wrapper');
-            wrapper.style.marginLeft = sidebar.classList.contains('show') ? '250px' : '0';
-        });
+    <ul class="menu">
+      <li class="section-title">General</li>
+      <li><a href="#" class="active"><i class='bx bx-grid-alt'></i><span>Resumen</span></a></li>
+      <li><a href="#ventas"><i class='bx bx-line-chart'></i><span>Ventas</span></a></li>
+      <li><a href="#inventario"><i class='bx bx-box'></i><span>Inventario</span></a></li>
+      <li><a href="#reservas"><i class='bx bx-calendar'></i><span>Reservas</span></a></li>
 
-        // Dark mode toggle
-        const htmlEl = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-        if(localStorage.getItem('theme') === 'dark') {
-            htmlEl.classList.add('dark');
+      <li class="section-title">Gestión</li>
+      <li><a href="#clientes"><i class='bx bx-user'></i><span>Clientes</span></a></li>
+      <li><a href="#reportes"><i class='bx bx-pie-chart-alt-2'></i><span>Reportes</span></a></li>
+      <li><a href="#marketing"><i class='bx bx-bullseye'></i><span>Marketing</span></a></li>
+      <li><a href="#operaciones"><i class='bx bx-cog'></i><span>Operaciones</span></a></li>
+
+      <li class="section-title">Sistema</li>
+      <li><a href="#ajustes"><i class='bx bx-sliders'></i><span>Configuración</span></a></li>
+      <li><a href="#ayuda"><i class='bx bx-help-circle'></i><span>Ayuda</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- ==========================
+       NAVBAR SUPERIOR
+       ========================== -->
+  <nav class="app-navbar navbar navbar-expand-lg fixed-top px-3">
+    <div class="container-fluid">
+      <!-- Botón toggle sidebar -->
+      <button id="btnSidebar" class="btn btn-outline-secondary me-2 d-none d-lg-inline-flex" title="Colapsar sidebar">
+        <i class='bx bx-sidebar'></i>
+      </button>
+      <!-- Mostrar/Ocultar sidebar en móviles -->
+      <button id="btnSidebarMobile" class="btn btn-outline-secondary me-2 d-inline-flex d-lg-none" title="Abrir menú">
+        <i class='bx bx-menu'></i>
+      </button>
+
+      <!-- Buscador -->
+      <form class="d-none d-md-flex flex-grow-1 max-w-lg" role="search" style="max-width: 520px;">
+        <div class="input-group">
+          <span class="input-group-text bg-transparent border-end-0"><i class='bx bx-search'></i></span>
+          <input class="form-control border-start-0" type="search" placeholder="Buscar… (clientes, pedidos, productos)" aria-label="Search">
+        </div>
+      </form>
+
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <!-- Dark Mode Toggle -->
+        <li class="nav-item">
+          <button id="themeToggle" class="btn btn-outline-secondary" title="Tema claro/oscuro">
+            <i class='bx bx-moon'></i>
+          </button>
+        </li>
+        <!-- Notificaciones -->
+        <li class="nav-item dropdown">
+          <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class='bx bx-bell fs-4'></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end shadow">
+            <span class="dropdown-item-text fw-semibold">Notificaciones</span>
+            <div><hr class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#"><i class='bx bx-package me-2'></i>Pedido #1823 enviado</a>
+            <a class="dropdown-item" href="#"><i class='bx bx-user-plus me-2'></i>Nuevo cliente registrado</a>
+            <a class="dropdown-item" href="#"><i class='bx bx-error me-2'></i>Stock bajo: SKU-991</a>
+          </div>
+        </li>
+        <!-- Avatar usuario -->
+        <li class="nav-item dropdown">
+          <a class="nav-link d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://i.pravatar.cc/100?img=12" class="rounded-circle" width="36" height="36" alt="avatar">
+            <span class="d-none d-sm-inline fw-medium">Alex</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li><a class="dropdown-item" href="#"><i class='bx bx-id-card me-2'></i>Perfil</a></li>
+            <li><a class="dropdown-item" href="#"><i class='bx bx-customize me-2'></i>Preferencias</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#"><i class='bx bx-log-out me-2'></i>Salir</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ==========================
+       CONTENIDO PRINCIPAL
+       ========================== -->
+  <div class="app-wrapper">
+    <main class="container-fluid py-4">
+      <!-- Breadcrumb / Header -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+        <div>
+          <h1 class="h4 mb-1">Resumen</h1>
+          <p class="text-muted mb-0">Ejemplo adaptable a ecommerce, restobar, turismo e inventarios.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary"><i class='bx bx-plus me-1'></i>Acción rápida</button>
+          <button class="btn btn-outline-secondary"><i class='bx bx-export me-1'></i>Exportar</button>
+        </div>
+      </div>
+
+      <!-- Métricas destacadas -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="metric">
+                <div class="icon bg-cyan-500 text-white"><i class='bx bx-cart'></i></div>
+                <div>
+                  <div class="text-muted text-uppercase small">Ventas (Hoy)</div>
+                  <div class="h4 mb-0">$ 12,430</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="metric">
+                <div class="icon bg-emerald-500 text-white"><i class='bx bx-user'></i></div>
+                <div>
+                  <div class="text-muted text-uppercase small">Usuarios nuevos</div>
+                  <div class="h4 mb-0">318</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="metric">
+                <div class="icon bg-amber-500 text-white"><i class='bx bx-receipt'></i></div>
+                <div>
+                  <div class="text-muted text-uppercase small">Pedidos</div>
+                  <div class="h4 mb-0">1,204</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="metric">
+                <div class="icon bg-fuchsia-500 text-white"><i class='bx bx-show'></i></div>
+                <div>
+                  <div class="text-muted text-uppercase small">Vistas</div>
+                  <div class="h4 mb-0">85,920</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos: Chart.js (línea y barras) + ApexCharts (donut) -->
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Ventas semanales</span>
+              <small class="text-muted">Chart.js (Línea)</small>
+            </div>
+            <div class="card-body">
+              <canvas id="lineChart" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Pedidos por categoría</span>
+              <small class="text-muted">Chart.js (Barras)</small>
+            </div>
+            <div class="card-body">
+              <canvas id="barChart" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-xl-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Origen de tráfico</span>
+              <small class="text-muted">ApexCharts (Donut)</small>
+            </div>
+            <div class="card-body">
+              <div id="donutChart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-xl-8">
+          <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Tabla de pedidos</span>
+              <small class="text-muted">DataTables</small>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table id="ordersTable" class="table table-hover align-middle" style="width:100%">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Cliente</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Total</th>
+                      <th>Canal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Ejemplo de datos ficticios; fácilmente reemplazables -->
+                    <tr><td>1823</td><td>Juan Pérez</td><td>2025-09-01</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 89.90</td><td>Web</td></tr>
+                    <tr><td>1824</td><td>Ana Gómez</td><td>2025-09-02</td><td><span class="badge text-bg-warning">Pendiente</span></td><td>$ 120.50</td><td>Tienda</td></tr>
+                    <tr><td>1825</td><td>Carlos Ruiz</td><td>2025-09-02</td><td><span class="badge text-bg-danger">Devuelto</span></td><td>$ 39.00</td><td>App</td></tr>
+                    <tr><td>1826</td><td>Lucía Vega</td><td>2025-09-03</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 210.75</td><td>Web</td></tr>
+                    <tr><td>1827</td><td>Diego Soto</td><td>2025-09-04</td><td><span class="badge text-bg-primary">Enviado</span></td><td>$ 59.90</td><td>App</td></tr>
+                    <tr><td>1828</td><td>María León</td><td>2025-09-04</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 480.00</td><td>Tienda</td></tr>
+                    <tr><td>1829</td><td>Pedro Díaz</td><td>2025-09-05</td><td><span class="badge text-bg-warning">Pendiente</span></td><td>$ 75.30</td><td>Web</td></tr>
+                    <tr><td>1830</td><td>Laura Quiroz</td><td>2025-09-05</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 15.99</td><td>App</td></tr>
+                    <tr><td>1831</td><td>Andrés Melo</td><td>2025-09-05</td><td><span class="badge text-bg-primary">Enviado</span></td><td>$ 330.10</td><td>Web</td></tr>
+                    <tr><td>1832</td><td>Sara Ruiz</td><td>2025-09-06</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 199.99</td><td>Tienda</td></tr>
+                    <tr><td>1833</td><td>Miguel Rojas</td><td>2025-09-06</td><td><span class="badge text-bg-danger">Devuelto</span></td><td>$ 28.00</td><td>App</td></tr>
+                    <tr><td>1834</td><td>Elena N.</td><td>2025-09-07</td><td><span class="badge text-bg-success">Completado</span></td><td>$ 88.80</td><td>Web</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secciones genéricas para extensibilidad -->
+      <div class="row g-3" id="secciones-genericas">
+        <div class="col-12 col-md-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header"><span class="fw-semibold"><i class='bx bx-restaurant me-2'></i>Restobar • Mesas & Reservas</span></div>
+            <div class="card-body">
+              <p class="mb-2 text-muted">Panel adaptable para gestionar ocupación, reservas y turnos.</p>
+              <ul class="mb-0">
+                <li>Capacidad ocupada: 63%</li>
+                <li>Próximas reservas (hoy): 12</li>
+                <li>Órdenes en preparación: 7</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header"><span class="fw-semibold"><i class='bx bx-map-alt me-2'></i>Turismo • Tours & Paquetes</span></div>
+            <div class="card-body">
+              <p class="mb-2 text-muted">Sección para reservas de tours, ocupación de buses y valoraciones.</p>
+              <ul class="mb-0">
+                <li>Tours programados (semana): 24</li>
+                <li>Avg. valoración: 4.7/5</li>
+                <li>Cancelaciones: 3</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer mt-4 py-3 text-center small rounded">
+        <div class="container">
+          <span>© <span id="year"></span> Dashboard Premium Template · Hecho con Bootstrap 5, TailwindCSS, Chart.js, ApexCharts & DataTables.</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==========================
+       JS: Librerías (CDN oficiales)
+       ========================== -->
+  <!-- jQuery (requerido por DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- Bootstrap 5 Bundle (incluye Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- ApexCharts -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- DataTables (Bootstrap 5) -->
+  <script src="https://cdn.datatables.net/v/bs5/dt-2.0.7/datatables.min.js"></script>
+
+  <!-- ==========================
+       JS: Lógica del template
+       ========================== -->
+  <script>
+    // Utilidades: año en footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Aplicar tema guardado
+    (function initTheme() {
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = stored || (prefersDark ? 'dark' : 'light');
+      setTheme(theme);
+    })();
+
+    function setTheme(theme) {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', theme);
+      // Tailwind dark class
+      if (theme === 'dark') html.classList.add('dark'); else html.classList.remove('dark');
+      localStorage.setItem('theme', theme);
+    }
+
+    // Toggle de tema (icono cambia dinámicamente)
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(current === 'light' ? 'dark' : 'light');
+      themeBtn.innerHTML = (document.documentElement.getAttribute('data-theme') === 'dark') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+    });
+    // set icon on load
+    themeBtn.innerHTML = (document.documentElement.getAttribute('data-theme') === 'dark') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+
+    // Sidebar: colapsar (desktop) & abrir/cerrar (mobile)
+    const body = document.body;
+    const sidebar = document.getElementById('sidebar');
+    document.getElementById('btnSidebar').addEventListener('click', () => {
+      body.classList.toggle('sidebar-collapsed');
+    });
+    document.getElementById('btnSidebarMobile').addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+    // Cerrar sidebar móvil al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      const isClickInside = sidebar.contains(e.target) || e.target.closest('#btnSidebarMobile');
+      if (!isClickInside && window.innerWidth < 992) sidebar.classList.remove('open');
+    });
+
+    // ==========================
+    // Chart.js – Línea
+    // ==========================
+    const lineCtx = document.getElementById('lineChart');
+    const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+        datasets: [{
+          label: 'Ventas ($)',
+          data: [2200, 2800, 2400, 3000, 4200, 5100, 4100],
+          tension: 0.35,
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: true } },
+        scales: {
+          y: { beginAtZero: false }
         }
-        themeToggle.addEventListener('click', () => {
-            htmlEl.classList.toggle('dark');
-            localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
-        });
+      }
+    });
 
-        // DataTables initialization
-        $(document).ready(function() {
-            $('#ordersTable').DataTable();
-        });
+    // ==========================
+    // Chart.js – Barras
+    // ==========================
+    const barCtx = document.getElementById('barChart');
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Electrónica','Moda','Hogar','Deportes','Belleza','Alimentos'],
+        datasets: [{
+          label: 'Pedidos',
+          data: [320, 410, 260, 180, 220, 150],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: true } },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
 
-        // Chart.js Line chart
-        const ctxLine = document.getElementById('lineChart');
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Ventas',
-                    data: [150, 200, 180, 220, 300, 250],
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13,110,253,0.1)',
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+    // ==========================
+    // ApexCharts – Donut
+    // ==========================
+    const donutOptions = {
+      series: [44, 33, 16, 7],
+      labels: ['Orgánico', 'Ads', 'Referidos', 'Email'],
+      chart: { type: 'donut', height: 300 },
+      legend: { position: 'bottom' },
+      dataLabels: { enabled: true },
+      stroke: { show: false },
+      responsive: [{
+        breakpoint: 576,
+        options: { chart: { height: 260 } }
+      }],
+      theme: { mode: (document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light') }
+    };
+    const donutChart = new ApexCharts(document.querySelector('#donutChart'), donutOptions);
+    donutChart.render();
 
-        // ApexCharts Bar chart
-        const barOptions = {
-            chart: { type: 'bar', height: 300 },
-            series: [{ name: 'Pedidos', data: [30, 40, 45, 50, 49, 60, 70] }],
-            xaxis: { categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] }
-        };
-        const barChart = new ApexCharts(document.querySelector('#barChart'), barOptions);
-        barChart.render();
+    // Ajustar tema de ApexCharts al cambiar modo
+    const observer = new MutationObserver(() => {
+      donutChart.updateOptions({ theme: { mode: (document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light') } });
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-        // Chart.js Doughnut chart
-        const ctxDoughnut = document.getElementById('doughnutChart');
-        new Chart(ctxDoughnut, {
-            type: 'doughnut',
-            data: {
-                labels: ['Activos', 'Inactivos', 'Nuevos'],
-                datasets: [{
-                    data: [60, 25, 15],
-                    backgroundColor: ['#0d6efd', '#6c757d', '#198754']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    </script>
+    // ==========================
+    // DataTables – inicialización básica
+    // ==========================
+    $(document).ready(function() {
+      $('#ordersTable').DataTable({
+        pageLength: 5,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[0, 'desc']],
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/2.0.7/i18n/es-ES.json'
+        }
+      });
+    });
+  </script>
 </body>
 </html>
